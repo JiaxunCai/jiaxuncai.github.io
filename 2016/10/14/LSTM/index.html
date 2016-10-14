@@ -4,14 +4,23 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>Archives: 2016/10 | Jiaxun&#39;s Blog</title>
+  <title>LSTM的理解与推导 | Jiaxun&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Jiaxun's Blog">
-<meta property="og:url" content="https://jiaxuncai.github.io/archives/2016/10/index.html">
+  <meta name="description" content="LSTM理解与推导Long Short-Term Memory（LSTM） 是一种循环神经网络（Recurrent Neural Network, RNN）。跟所有RNN一样，在网络单元足够多的条件下，LSTM可以计算传统计算机所能计算的任何东西。（Like most RNNs, an LSTM network is universal in the sense that given enough">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LSTM的理解与推导">
+<meta property="og:url" content="https://jiaxuncai.github.io/2016/10/14/LSTM/index.html">
 <meta property="og:site_name" content="Jiaxun's Blog">
+<meta property="og:description" content="LSTM理解与推导Long Short-Term Memory（LSTM） 是一种循环神经网络（Recurrent Neural Network, RNN）。跟所有RNN一样，在网络单元足够多的条件下，LSTM可以计算传统计算机所能计算的任何东西。（Like most RNNs, an LSTM network is universal in the sense that given enough">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/006y8lVajw1f8s2b8wafyj30qw0owjtm.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/large/006y8lVagw1f8s2co0uixj30su0m2mzn.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/large/006y8lVagw1f8s2cog4sij30tu0zu0v8.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/006y8lVagw1f8s2couv7gj30cq018jrc.jpg">
+<meta property="og:updated_time" content="2016-10-14T12:33:11.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Jiaxun's Blog">
+<meta name="twitter:title" content="LSTM的理解与推导">
+<meta name="twitter:description" content="LSTM理解与推导Long Short-Term Memory（LSTM） 是一种循环神经网络（Recurrent Neural Network, RNN）。跟所有RNN一样，在网络单元足够多的条件下，LSTM可以计算传统计算机所能计算的任何东西。（Like most RNNs, an LSTM network is universal in the sense that given enough">
+<meta name="twitter:image" content="http://ww1.sinaimg.cn/large/006y8lVajw1f8s2b8wafyj30qw0owjtm.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Jiaxun&#39;s Blog" type="application/atom+xml">
   
@@ -120,103 +129,95 @@
 </nav>
 
       <div class="body-wrap">
+        <article id="post-LSTM" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
         
   
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2016" class="archive-year">2016</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2016/10/14/test-md/" class="archive-article-date">
-  	<time datetime="2016-10-14T12:44:43.000Z" itemprop="datePublished"><i class="icon-clock"></i>2016-10-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/10/14/test-md/">test</a>
+    <h1 class="article-title" itemprop="name">
+      LSTM的理解与推导
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="LSTM理解与推导"><a href="#LSTM理解与推导" class="headerlink" title="LSTM理解与推导"></a>LSTM理解与推导</h3><p>Long Short-Term Memory（LSTM） 是一种循环神经网络（Recurrent Neural Network, RNN）。跟所有RNN一样，在网络单元足够多的条件下，LSTM可以计算传统计算机所能计算的任何东西。（Like most RNNs, an LSTM network is universal in the sense that given enough network units it can compute anything a conventional computer can compute.<sup>[1]</sup>)</p>
+<h4 id="RNN"><a href="#RNN" class="headerlink" title="RNN"></a>RNN</h4><p>传统的前馈神经网络（feedforward neural networks）如下图所示：<br><img src="http://ww1.sinaimg.cn/large/006y8lVajw1f8s2b8wafyj30qw0owjtm.jpg" alt="前馈网络"></p>
+<p>前馈神经网络只从输入节点接受信息，它只能对输入空间进行操作，对不同时间序列的输入没有“记忆”。在前馈神经网络中，信息只能从输入层流向隐藏层，再流向输出层。这种网络无法解决带有时序性的问题，比如预测句子中的下一个单词，这种情况下，往往需要使用到前面已知的单词。假设要预测这样一句话：百度是一家<em>__</em>公司。显然，受到前面的词语“百度”的影响，横线中填入“互联网”的概率远大于“金融”，即使单从语法上考虑，填入“金融”也是正确的。<br>RNN与前馈神经网络最大的不同是，它不仅能对输入空间进行操作，还能对内部状态空间进行操作，它的结构如下：<br><img src="http://ww4.sinaimg.cn/large/006y8lVagw1f8s2co0uixj30su0m2mzn.jpg" alt="RNN"></p>
+<p>可以看到，RNN的隐藏层多了一条连向自己的边。因此，它的输入不仅包括输入层的数据，还包括了来自上一时刻的隐藏层的输出。</p>
+<p>RNN可以采用BPTT（Back-Propagation Through Time）算法进行学习。BPTT和BP算法类似，都是基于梯度的训练方法。首先，将RNN按时间序列展开，如下图：<br><img src="http://ww4.sinaimg.cn/large/006y8lVagw1f8s2cog4sij30tu0zu0v8.jpg" alt="BPTT"></p>
+<p>图中表示的是时间步长数为3的RNN的展开。一般的，时间步长为T的RNN展开后将含有T个隐藏层，T可以是任意的。当T为1时，RNN退化为一个普通的前馈神经网络。将RNN展开之后，就可以使用与训练带BP的前馈神经网络类似的方法进行训练。有一点需要注意的是，在展开的RNN中，每一层隐藏层实际上是相同的（只是在不同时刻的副本），也就是说，它们最后得到的参数必须是一致的。在训练过程中，不同时刻的隐藏层的参数可能会不一致，最后可以将它们的平均数作为模型的参数。</p>
+<p>关于RNN的内容，具体的可以参见文献<sup>[2]</sup>。</p>
+<h4 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h4><p>在实际应用中，上述RNN模型存在着梯度消失和梯度爆炸的问题。根据链式法则，输出误差对于输入层的偏导等于各层偏导的乘积。<br><img src="http://ww1.sinaimg.cn/large/006y8lVagw1f8s2couv7gj30cq018jrc.jpg" width="50" height="20"></p>
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2016/10/14/LSTM/" class="archive-article-date">
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2016/10/14/LSTM/" class="archive-article-date">
   	<time datetime="2016-10-14T09:16:21.000Z" itemprop="datePublished"><i class="icon-clock"></i>2016-10-14</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/10/14/LSTM/">LSTM的理解与推导</a>
-    </h1>
-  
+      
+      
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2016/10/05/hello-world/" class="archive-article-date">
-  	<time datetime="2016-10-05T14:03:11.000Z" itemprop="datePublished"><i class="icon-clock"></i>2016-10-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/10/05/hello-world/">Hello World</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-          
+  
+<nav id="article-nav">
+  
+    <a href="/2016/10/14/test-md/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          test
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/10/05/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Hello World</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
 
-    
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+	    <a class="jiathis_button_twitter"></a>
+	    <a class="jiathis_button_plus"></a> 
+	    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+
 
 
       </div>
@@ -239,8 +240,8 @@
 		mathjax: false,
 		animate: true,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
