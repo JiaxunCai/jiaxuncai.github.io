@@ -138,36 +138,11 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Long Short-Term Memory（LSTM） 是一种循环神经网络（Recurrent Neural Network, RNN）。跟所有RNN一样，在网络单元足够多的条件下，LSTM可以计算传统计算机所能计算的任何东西。（Like most RNNs, an LSTM network is universal in the sense that given enough network units it can compute anything a conventional computer can compute. <a href="https://en.wikipedia.org/wiki/Long_short-term_memory" target="_blank" rel="external">维基百科</a>)</p>
-<h2 id="RNN"><a href="#RNN" class="headerlink" title="RNN"></a>RNN</h2><p>传统前馈神经网络（feedforward neural networks）如下图所示：<br><img src="http://ww1.sinaimg.cn/large/006y8lVajw1f8s2b8wafyj30qw0owjtm.jpg" alt="前馈网络"></p>
-<p>前馈神经网络只从输入节点接受信息，它只能对输入空间进行操作，对不同时间序列的输入没有“记忆”。在前馈神经网络中，信息只能从输入层流向隐藏层，再流向输出层。这种网络无法解决带有时序性的问题，比如预测句子中的下一个单词，这种情况下，往往需要使用到前面已知的单词。假设要预测这样一句话：百度是一家<em>__</em>公司。显然，受到前面的词语“百度”的影响，横线中填入“互联网”的概率远大于“金融”，即使单从语法上考虑，填入“金融”也是正确的。</p>
-<p>RNN与前馈神经网络最大的不同是，它不仅能对输入空间进行操作，还能对内部状态空间进行操作，它的结构如下：<br><img src="http://ww4.sinaimg.cn/large/006y8lVagw1f8s2co0uixj30su0m2mzn.jpg" alt="RNN"></p>
-<p>可以看到，RNN的隐藏层多了一条连向自己的边。因此，它的输入不仅包括输入层的数据，还包括了来自上一时刻的隐藏层的输出。</p>
-<p>RNN可以采用BPTT（Back-Propagation Through Time）算法进行学习。BPTT和BP算法类似，都是基于梯度的训练方法。首先，将RNN按时间序列展开，如下图：<br><img src="http://ww4.sinaimg.cn/large/006y8lVagw1f8s2cog4sij30tu0zu0v8.jpg" alt="BPTT"></p>
-<p>图中表示的是时间步长数为3的RNN的展开。一般的，时间步长为T的RNN展开后将含有T个隐藏层，T可以是任意的。当T为1时，RNN退化为一个普通的前馈神经网络。将RNN展开之后，就可以使用与训练带BP的前馈神经网络类似的方法进行训练。有一点需要注意的是，在展开的RNN中，每一层隐藏层实际上是相同的（只是在不同时刻的副本），也就是说，它们最后得到的参数必须是一致的。在训练过程中，不同时刻的隐藏层的参数可能会不一致，最后可以将它们的平均数作为模型的参数。</p>
-<p>关于RNN的内容，具体的可以参考“<a href="http://axon.cs.byu.edu/~martinez/classes/678/Papers/RNN_Intro.pdf" target="_blank" rel="external">A guide to recurrent neural networks and backpropagation</a>”。</p>
-<h2 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h2><h3 id="梯度消失与避免"><a href="#梯度消失与避免" class="headerlink" title="梯度消失与避免"></a>梯度消失与避免</h3><p>在实际应用中，上述RNN模型存在着梯度消失和梯度爆炸的问题。根据链式法则，输出误差对于输入层的偏导等于各层偏导的乘积（关于前馈神经网络的误差传播参考“<a href="http://www.cnblogs.com/charlotte77/p/5629865.html" target="_blank" rel="external">一文弄懂神经网络中的反向传播法——BackPropagation</a>“）。<br>假设使用的是平均平方误差，则在时刻t，输出层k的误差信号表示为（以下推导来自“<a href="https://www.researchgate.net/publication/13853244_Long_Short-term_Memory" target="_blank" rel="external">Long Short-Term Memory</a>”，本文采用与论文一致的表示方法）：<br><img src="http://ww1.sinaimg.cn/large/006y8lVagw1f8s2couv7gj30cq018jrc.jpg" width="300"></p>
-<p>其中,<br><img src="http://ww4.sinaimg.cn/large/006y8lVagw1f8st5b12muj307i01k3yd.jpg" width="200"><br>是表示非输入单元，f<sub>i</sub>是可微函数，</p>
-<img src="http://ww1.sinaimg.cn/large/006y8lVagw1f8st5lzm59j30ac02gmx2.jpg" width="250">
-<p>表示当前网络单元的输入，w<sub>ij</sub>是单元j和i的之间权重。非输出单元j的反向误差信号为：<br><img src="http://ww3.sinaimg.cn/large/006y8lVagw1f8st5txz83j30do02igll.jpg" width="300"></p>
-<p>对于时间步长为q的RNN网络，在t-q时刻的的误差可以通过以下递归函数来求解：<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8st6pgw9uj30vw050dgg.jpg" width="600"></p>
-<p>令l<sub>q</sub>=v，l<sub>0</sub>=u，上式可以进一步写成：<br><img src="http://ww4.sinaimg.cn/large/006y8lVagw1f8st60foo7j30m202y0sz.jpg" width="500"></p>
-<p>由于梯度最终以乘积的形式得出，若乘式中的每一项（或大部分）都大于1，<br><img src="http://ww4.sinaimg.cn/large/006y8lVajw1f8stb3pvwmj30i602g3yj.jpg" width="300"></p>
-<p>则将导致梯度爆炸；若每一项都小于1，<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8stbdlafwj30hq02st8q.jpg" width="300"></p>
-<p>则随着乘法次数的增加，梯度会消失。<br>梯度消失和梯度爆炸都会严重影响学习的过程。</p>
-<p>为了避免梯度消失和梯度爆炸，一个简单的做法是强制让流过每个神经元的误差都为1，即</p>
-<p>简单推导可以知道，f是一个线性函数。这样就保证了误差将以参数的形式在网络中流动，不会出现梯度爆炸或者梯度消失的问题，把这样的结构称为CEC（constant error carousel）。但是这种做法存在着权重冲突的问题。</p>
-<h3 id="权重冲突问题与解决"><a href="#权重冲突问题与解决" class="headerlink" title="权重冲突问题与解决"></a>权重冲突问题与解决</h3><p>前面说到，RNN的隐藏层同时接受外界信息和上一时刻隐藏层的输出作为输入，回到前面将RNN展开成深层网络的情况。隐藏层在每一个时刻t的输出都通过权重向量U影响着下一个时刻t+1的隐藏层。而实际上，对于不同的时刻t, t+1, …, t+k，图中隐藏层的权重向量V和U是相同的。虽然在展开图中它们看起来像是不同层次的节点，但实际上，它们都是同一个实体。</p>
-<p>这就产生一个问题，在某一个时刻t，隐藏层可能需要使得权重向量U整体有一个较大的值，即t-1时刻隐藏层的输出对t时刻很重要；而在时刻t+k，隐藏层可能需要使权重U有一个较小的值，也就是说此时隐藏层不想受到t+k-1时刻的计算结果的影响。考虑现实的例子，假如要预测以下句子中动词的形式，括号中为需要预测的词：I may (go) home and (get) my book, but that (depends)。句子中go和get的形式受到may的影响，而depends的形态由that决定，而与may无关。因此预测过程中，当读入and时，may的影响还在，因此应该增大权重U的值，而在读入that的时候，应该同时减小来自上一时刻的隐藏层输出的影响，即减小权重U的，这就与前面产生了冲突。</p>
-<p>为了解决这种冲突，Sepp Hochreiter和Jürgen Schmidhuber早在1997年就在论文“<a href="https://www.researchgate.net/publication/13853244_Long_Short-term_Memory" target="_blank" rel="external">Long Short-Term Memory</a>”提出了LSTM，下面的部分图以及公式来自该论文。为了使隐藏层的输出对下一个时刻的影响变得可控，LSTM引入了输入门，输出门的概念。LSTM的基本单元称为记忆元件（memory cell），它是在CEC的基础上扩展而成的，如下图：<br><img src="http://ww1.sinaimg.cn/large/006y8lVajw1f8spmw90ibj30ye0fk0vv.jpg" alt="LSTM"></p>
-<p>图中，3表示输入门（input gate）；6表示输出门（output gate）；4是CEC单元，可以看到它有一条到自己的权值为1的边。之后，又有人将LSTM进一步扩展，引入了遗忘门，如下图（图片内容出自“<a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="external">Understanding LSTM Networks</a>”）：<br><img src="http://ww1.sinaimg.cn/large/006y8lVajw1f8squqpfgsj31kw0lddky.jpg" alt="LSTM-chain"></p>
-<p>为了方便表示，把上一个图称为lstm-1，这个图称为lstm-2。lstm-2中与lstm-1编号相同的单元分别一一对应，可以看到，lstm-2比lstm-1多了单元8，它就是所谓的遗忘门。lstm-2中元素的含义如下：<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq92lnsej30qe04x3yy.jpg" width="600"></p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq9wzquyj305i06qa9z.jpg" width="100"> 表示一个门，它由一个网络层和一个乘法单元构成。</p>
-<h3 id="LSTM中的信息流传递"><a href="#LSTM中的信息流传递" class="headerlink" title="LSTM中的信息流传递"></a>LSTM中的信息流传递</h3><p>（以下图片内容出自“<a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="external">Understanding LSTM Networks</a>”）<br>首先，记忆元件（memory cell）接受上一个时刻的输出（h<sub>t-1</sub>）以及这个时刻的外界信息（x<sub>t</sub>）作为输入，将它们合并成一个长向量，经过𝞼变换成为f<sub>t</sub>。<br><img src="http://ww3.sinaimg.cn/large/006y8lVagw1f8sqirs9vnj31eq0fo402.jpg" alt=""></p>
-<p>接着，前面说到的两个输入合并成的向量又分别进行了𝞼变换和tanh变换，成为i<sub>t</sub>和Ĉ<sub>t</sub>进入输入门。其中i<sub>t</sub>的值用于决定是否要接受输入信息（即Ĉ<sub>t</sub>）。<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sqwzrkx0j31eq0fognr.jpg" alt=""></p>
-<p>之后，根据f<sub>t</sub>的值决定是否保留上一时刻隐藏层CEC的输出（C<sub>t-1</sub>），再将经过i<sub>t</sub>缩放之后的输入Ĉ<sub>t</sub>累加到CEC（C<sub>t-1</sub>）中，成为C<sub>t</sub>。<br><img src="http://ww1.sinaimg.cn/large/006y8lVagw1f8sr6rec6oj31eq0foabt.jpg" alt=""></p>
-<p>最后在输出门中，由O<sub>t</sub>决定是否将经过tanh变换的C<sub>t</sub>输出，作为下一时刻输入的一部分。<br><img src="http://ww4.sinaimg.cn/large/006y8lVajw1f8sr9ct7p8j31eq0fotat.jpg" alt=""></p>
-
+        <p>Long Short-Term Memory（LSTM） 是一种循环神经网络（Recurrent Neural Network, RNN）。跟所有RNN一样，在网络单元足够多的条件下，LSTM可以计算传统计算机所能计算的任何东西。（Like most RNNs, an LSTM network is universal in the sense that given enough network units it can compute anything a conventional computer can compute. <a href="https://en.wikipedia.org/wiki/Long_short-term_memory">维基百科</a>)</p>
+<h2 id="RNN"><a href="#RNN" class="headerlink" title="RNN"></a>RNN</h2><p>传统前馈神经网络（feedforward neural networks）如下图所示：<br>
+        <p class="article-more-link">
+          <a  href="/2016/10/14/LSTM的理解与推导/#more">more >></a>
+        </p>
       
     </div>
     <div class="article-info article-info-index">
