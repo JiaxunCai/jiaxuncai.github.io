@@ -152,7 +152,7 @@
 <p>其中,<br><img src="http://ww4.sinaimg.cn/large/006y8lVagw1f8st5b12muj307i01k3yd.jpg" width="200"><br>是表示非输入单元，f<sub>i</sub>是可微函数，</p>
 <img src="http://ww1.sinaimg.cn/large/006y8lVagw1f8st5lzm59j30ac02gmx2.jpg" width="250">
 <p>表示当前网络单元的输入，w<sub>ij</sub>是单元j和i的之间权重。非输出单元j的反向误差信号为：<br><img src="http://ww3.sinaimg.cn/large/006y8lVagw1f8st5txz83j30do02igll.jpg" width="300"></p>
-<p>对于时间步长为q的RNN网络，在t-q时刻的的误差可以通过以下递归函数来求解：<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8st6pgw9uj30vw050dgg.jpg" width="500"></p>
+<p>对于时间步长为q的RNN网络，在t-q时刻的的误差可以通过以下递归函数来求解：<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8st6pgw9uj30vw050dgg.jpg" width="600"></p>
 <p>令l<sub>q</sub>=v，l<sub>0</sub>=u，上式可以进一步写成：<br><img src="http://ww4.sinaimg.cn/large/006y8lVagw1f8st60foo7j30m202y0sz.jpg" width="500"></p>
 <p>由于梯度最终以乘积的形式得出，若乘式中的每一项（或大部分）都大于1，<br><img src="http://ww4.sinaimg.cn/large/006y8lVajw1f8stb3pvwmj30i602g3yj.jpg" width="300"></p>
 <p>则将导致梯度爆炸；若每一项都小于1，<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8stbdlafwj30hq02st8q.jpg" width="300"></p>
