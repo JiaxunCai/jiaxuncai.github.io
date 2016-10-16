@@ -53,7 +53,7 @@ Like most RNNs, an LSTM network is universal in the sense that given enough netw
 <meta property="og:image" content="http://ww4.sinaimg.cn/large/801b780agw1f8u9pxpt6wj20ga04w0sv.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/801b780agw1f8u9qcccctj20lu02gdfy.jpg">
 <meta property="og:image" content="http://ww3.sinaimg.cn/large/801b780agw1f8u9qlkzpoj213k02aq3c.jpg">
-<meta property="og:updated_time" content="2016-10-16T10:36:19.000Z">
+<meta property="og:updated_time" content="2016-10-16T10:37:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LSTM学习笔记">
 <meta name="twitter:description" content="Long Short-Term Memory（LSTM） 是一种循环神经网络（Recurrent Neural Network, RNN）。跟所有RNN一样，在网络单元足够多的条件下，LSTM可以计算传统计算机所能计算的任何东西。
@@ -211,11 +211,11 @@ Like most RNNs, an LSTM network is universal in the sense that given enough netw
 <p>为了解决这种冲突，Sepp Hochreiter和Jürgen Schmidhuber早在1997年就在论文“<a href="http://deeplearning.cs.cmu.edu/pdfs/Hochreiter97_lstm.pdf" target="_blank" rel="external">Long Short-Term Memory</a>”提出了LSTM，下面的部分图以及公式来自该论文。为了使隐藏层的输出对下一个时刻的影响变得可控，LSTM引入了输入门，输出门的概念。LSTM的基本单元称为记忆元件（memory cell），它是在CEC的基础上扩展而成的，如下图：<br><img src="http://ww1.sinaimg.cn/large/006y8lVajw1f8spmw90ibj30ye0fk0vv.jpg" width="600"></p>
 <p>图中，3表示输入门（input gate）；6表示输出门（output gate）；4是CEC单元，可以看到它有一条到自己的权值为1的边。之后，又有人将LSTM进一步扩展，引入了遗忘门，如下图（图片内容出自“<a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="external">Understanding LSTM Networks</a>”）：<br><img src="http://ww1.sinaimg.cn/large/006y8lVajw1f8squqpfgsj31kw0lddky.jpg" alt="LSTM-chain"></p>
 <p>为了方便表示，把上一个图称为lstm-1，这个图称为lstm-2。lstm-2中与lstm-1编号相同的单元分别一一对应，可以看到，lstm-2比lstm-1多了单元8，它就是所谓的遗忘门。lstm-2中元素的含义如下：<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq92lnsej30qe04x3yy.jpg" width="600"></p>
-<img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq9wzquyj305i06qa9z.jpg" width="100"> 表示一个门，它由一个网络层和一个乘法单元构成。<br><br>### LSTM参数更新的计算复杂度<br>LSTM每次更新的计算复杂度为：<br> <img src="http://ww1.sinaimg.cn/large/801b780agw1f8u9qcccctj20lu02gdfy.jpg" width="300">
+<img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq9wzquyj305i06qa9z.jpg" width="100"> 表示一个门，它由一个网络层和一个乘法单元构成。<br><br>LSTM每次更新的计算复杂度为：<br> <img src="http://ww1.sinaimg.cn/large/801b780agw1f8u9qcccctj20lu02gdfy.jpg" width="300">
 <p>其中，K表示输出单元的数量，C表示记忆元件块的数量，S&gt;0表示记忆元件块的大小，H是隐藏单元的数量，I是与记忆元件、门单元和隐藏单元直接相连（forward-connected）的单元的数量，而</p>
 <img src="http://ww3.sinaimg.cn/large/801b780agw1f8u9qlkzpoj213k02aq3c.jpg" width="600">
 <p>是权重的数量。</p>
-<h3 id="LSMT的信息传播"><a href="#LSMT的信息传播" class="headerlink" title="LSMT的信息传播"></a>LSMT的信息传播</h3><h4 id="输入信息前向传播"><a href="#输入信息前向传播" class="headerlink" title="输入信息前向传播"></a>输入信息前向传播</h4><p>（以下图片内容出自“<a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="external">Understanding LSTM Networks</a>”）<br>首先，记忆元件（memory cell）接受上一个时刻的输出（h<sub>t-1</sub>）以及这个时刻的外界信息（x<sub>t</sub>）作为输入，将它们合并成一个长向量，经过𝞼变换成为f<sub>t</sub>。<br><img src="http://ww3.sinaimg.cn/large/006y8lVagw1f8sqirs9vnj31eq0fo402.jpg" alt=""></p>
+<h3 id="LSTM的信息传播"><a href="#LSTM的信息传播" class="headerlink" title="LSTM的信息传播"></a>LSTM的信息传播</h3><h4 id="输入信息前向传播"><a href="#输入信息前向传播" class="headerlink" title="输入信息前向传播"></a>输入信息前向传播</h4><p>（以下图片内容出自“<a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="external">Understanding LSTM Networks</a>”）<br>首先，记忆元件（memory cell）接受上一个时刻的输出（h<sub>t-1</sub>）以及这个时刻的外界信息（x<sub>t</sub>）作为输入，将它们合并成一个长向量，经过𝞼变换成为f<sub>t</sub>。<br><img src="http://ww3.sinaimg.cn/large/006y8lVagw1f8sqirs9vnj31eq0fo402.jpg" alt=""></p>
 <p>接着，前面说到的两个输入合并成的向量又分别进行了𝞼变换和tanh变换，成为i<sub>t</sub>和Ĉ<sub>t</sub>进入输入门。其中i<sub>t</sub>的值用于决定是否要接受输入信息（即Ĉ<sub>t</sub>）。<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sqwzrkx0j31eq0fognr.jpg" alt=""></p>
 <p>之后，根据f<sub>t</sub>的值决定是否保留上一时刻隐藏层CEC的输出（C<sub>t-1</sub>），再将经过i<sub>t</sub>缩放之后的输入Ĉ<sub>t</sub>累加到CEC（C<sub>t-1</sub>）中，成为C<sub>t</sub>。<br><img src="http://ww1.sinaimg.cn/large/006y8lVagw1f8sr6rec6oj31eq0foabt.jpg" alt=""></p>
 <p>最后在输出门中，由O<sub>t</sub>决定是否将经过tanh变换的C<sub>t</sub>输出，作为下一时刻输入的一部分。<br><img src="http://ww4.sinaimg.cn/large/006y8lVajw1f8sr9ct7p8j31eq0fotat.jpg" alt=""></p>
