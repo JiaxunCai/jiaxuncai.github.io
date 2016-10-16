@@ -29,8 +29,8 @@ Like most RNNs, an LSTM network is universal in the sense that given enough netw
 <meta property="og:image" content="http://ww2.sinaimg.cn/large/006y8lVajw1f8stbdlafwj30hq02st8q.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/006y8lVajw1f8spmw90ibj30ye0fk0vv.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/006y8lVajw1f8squqpfgsj31kw0lddky.jpg">
-<meta property="og:image" content="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq92lnsej30qe04x3yy.jpg">
 <meta property="og:image" content="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq9wzquyj305i06qa9z.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq92lnsej30qe04x3yy.jpg">
 <meta property="og:image" content="http://ww3.sinaimg.cn/large/006y8lVagw1f8sqirs9vnj31eq0fo402.jpg">
 <meta property="og:image" content="http://ww2.sinaimg.cn/large/006y8lVajw1f8sqwzrkx0j31eq0fognr.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/006y8lVagw1f8sr6rec6oj31eq0foabt.jpg">
@@ -51,7 +51,7 @@ Like most RNNs, an LSTM network is universal in the sense that given enough netw
 <meta property="og:image" content="http://ww4.sinaimg.cn/large/801b780agw1f8u9pxpt6wj20ga04w0sv.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/801b780agw1f8u9qcccctj20lu02gdfy.jpg">
 <meta property="og:image" content="http://ww3.sinaimg.cn/large/801b780agw1f8u9qlkzpoj213k02aq3c.jpg">
-<meta property="og:updated_time" content="2016-10-16T10:38:58.000Z">
+<meta property="og:updated_time" content="2016-10-16T10:41:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LSTM学习笔记">
 <meta name="twitter:description" content="Long Short-Term Memory（LSTM） 是一种循环神经网络（Recurrent Neural Network, RNN）。跟所有RNN一样，在网络单元足够多的条件下，LSTM可以计算传统计算机所能计算的任何东西。
@@ -208,8 +208,24 @@ Like most RNNs, an LSTM network is universal in the sense that given enough netw
 <p>这就产生一个问题，在某一个时刻t，隐藏层可能需要使得权重向量U整体有一个较大的值，即t-1时刻隐藏层的输出对t时刻很重要；而在时刻t+k，隐藏层可能需要使权重U有一个较小的值，也就是说此时隐藏层不想受到t+k-1时刻的计算结果的影响。考虑现实的例子，假如要预测以下句子中动词的形式，括号中为需要预测的词：I may (go) home and (get) my book, but that (depends)。句子中go和get的形式受到may的影响，而depends的形态由that决定，而与may无关。因此预测过程中，当读入and时，may的影响还在，因此应该增大权重U的值，而在读入that的时候，应该同时减小来自上一时刻的隐藏层输出的影响，即减小权重U的，这就与前面产生了冲突。</p>
 <p>为了解决这种冲突，Sepp Hochreiter和Jürgen Schmidhuber早在1997年就在论文“<a href="http://deeplearning.cs.cmu.edu/pdfs/Hochreiter97_lstm.pdf" target="_blank" rel="external">Long Short-Term Memory</a>”提出了LSTM，下面的部分图以及公式来自该论文。为了使隐藏层的输出对下一个时刻的影响变得可控，LSTM引入了输入门，输出门的概念。LSTM的基本单元称为记忆元件（memory cell），它是在CEC的基础上扩展而成的，如下图：<br><img src="http://ww1.sinaimg.cn/large/006y8lVajw1f8spmw90ibj30ye0fk0vv.jpg" width="600"></p>
 <p>图中，3表示输入门（input gate）；6表示输出门（output gate）；4是CEC单元，可以看到它有一条到自己的权值为1的边。之后，又有人将LSTM进一步扩展，引入了遗忘门，如下图（图片内容出自“<a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="external">Understanding LSTM Networks</a>”）：<br><img src="http://ww1.sinaimg.cn/large/006y8lVajw1f8squqpfgsj31kw0lddky.jpg" alt="LSTM-chain"></p>
-<p>为了方便表示，把上一个图称为lstm-1，这个图称为lstm-2。lstm-2中与lstm-1编号相同的单元分别一一对应，可以看到，lstm-2比lstm-1多了单元8，它就是所谓的遗忘门。lstm-2中元素的含义如下：<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq92lnsej30qe04x3yy.jpg" width="600"></p>
-<img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq9wzquyj305i06qa9z.jpg" width="100"> 表示一个门，它由一个网络层和一个乘法单元构成。<br><br>是权重的数量。<br><br>### LSTM的信息传播<br>#### 输入信息前向传播<br>（以下图片内容出自“<a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="external">Understanding LSTM Networks</a>”）<br>首先，记忆元件（memory cell）接受上一个时刻的输出（h<sub>t-1</sub>）以及这个时刻的外界信息（x<sub>t</sub>）作为输入，将它们合并成一个长向量，经过𝞼变换成为f<sub>t</sub>。<br><img src="http://ww3.sinaimg.cn/large/006y8lVagw1f8sqirs9vnj31eq0fo402.jpg" alt=""><br><br>接着，前面说到的两个输入合并成的向量又分别进行了𝞼变换和tanh变换，成为i<sub>t</sub>和Ĉ<sub>t</sub>进入输入门。其中i<sub>t</sub>的值用于决定是否要接受输入信息（即Ĉ<sub>t</sub>）。<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sqwzrkx0j31eq0fognr.jpg" alt=""><br><br>之后，根据f<sub>t</sub>的值决定是否保留上一时刻隐藏层CEC的输出（C<sub>t-1</sub>），再将经过i<sub>t</sub>缩放之后的输入Ĉ<sub>t</sub>累加到CEC（C<sub>t-1</sub>）中，成为C<sub>t</sub>。<br><img src="http://ww1.sinaimg.cn/large/006y8lVagw1f8sr6rec6oj31eq0foabt.jpg" alt=""><br><br>最后在输出门中，由O<sub>t</sub>决定是否将经过tanh变换的C<sub>t</sub>输出，作为下一时刻输入的一部分。<br><img src="http://ww4.sinaimg.cn/large/006y8lVajw1f8sr9ct7p8j31eq0fotat.jpg" alt=""><br><br>Sepp Hochreiter和Jürgen Schmidhuber的论文中还提到一种称为记忆元件块（memory cell block）的部件。由S个共享相同的输入门、输出门（论文中的LSTM并没有记忆门）的记忆元件所构成的结构称为“大小为S的记忆元件块”。当S = 1时，该结构就是普通的记忆元件。<br><br>#### 误差的反向传播<br>首先，规定下标的表示如下：<br><br>- k：输出单元<br>- i：隐藏单元<br>- C<sub>j</sub>：第j个记忆元件块<br>- C<sub>j</sub><sup>v</sup>：第j个记忆元件块C<sub>j</sub>中的第v个单元<br>- l, m, u：任意的网络单元<br>- t：给定输入序列所有的时间步长<br><br>在t时刻，LSTM的平方误差计算如下:<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8t8il3l76j30ms04y3yp.jpg" width="300">
+<p>为了方便表示，把上一个图称为lstm-1，这个图称为lstm-2。lstm-2中与lstm-1编号相同的单元分别一一对应，可以看到，lstm-2比lstm-1多了单元8，它就是所谓的遗忘门。lstm-2中元素的含义如下：</p>
+<img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq9wzquyj305i06qa9z.jpg" width="100"> 表示一个门，它由一个网络层和一个乘法单元构成。<br><br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sq92lnsej30qe04x3yy.jpg" width="600">
+<p>在上面的图例中，每一条黑线表示信息（向量）的传递，从一个节点的输出到其他节点的输入。粉色的圈代表 pointwise 的操作，诸如向量的和，而黄色的矩形表示学习到的神经网络层。合在一起的线表示向量的连接，分开的线表示内容被复制，然后分发到不同的位置。</p>
+<h3 id="LSTM的信息传播"><a href="#LSTM的信息传播" class="headerlink" title="LSTM的信息传播"></a>LSTM的信息传播</h3><h4 id="输入信息前向传播"><a href="#输入信息前向传播" class="headerlink" title="输入信息前向传播"></a>输入信息前向传播</h4><p>（以下图片内容出自“<a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="external">Understanding LSTM Networks</a>”）<br>首先，记忆元件（memory cell）接受上一个时刻的输出（h<sub>t-1</sub>）以及这个时刻的外界信息（x<sub>t</sub>）作为输入，将它们合并成一个长向量，经过𝞼变换成为f<sub>t</sub>。<br><img src="http://ww3.sinaimg.cn/large/006y8lVagw1f8sqirs9vnj31eq0fo402.jpg" alt=""></p>
+<p>接着，前面说到的两个输入合并成的向量又分别进行了𝞼变换和tanh变换，成为i<sub>t</sub>和Ĉ<sub>t</sub>进入输入门。其中i<sub>t</sub>的值用于决定是否要接受输入信息（即Ĉ<sub>t</sub>）。<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8sqwzrkx0j31eq0fognr.jpg" alt=""></p>
+<p>之后，根据f<sub>t</sub>的值决定是否保留上一时刻隐藏层CEC的输出（C<sub>t-1</sub>），再将经过i<sub>t</sub>缩放之后的输入Ĉ<sub>t</sub>累加到CEC（C<sub>t-1</sub>）中，成为C<sub>t</sub>。<br><img src="http://ww1.sinaimg.cn/large/006y8lVagw1f8sr6rec6oj31eq0foabt.jpg" alt=""></p>
+<p>最后在输出门中，由O<sub>t</sub>决定是否将经过tanh变换的C<sub>t</sub>输出，作为下一时刻输入的一部分。<br><img src="http://ww4.sinaimg.cn/large/006y8lVajw1f8sr9ct7p8j31eq0fotat.jpg" alt=""></p>
+<p>Sepp Hochreiter和Jürgen Schmidhuber的论文中还提到一种称为记忆元件块（memory cell block）的部件。由S个共享相同的输入门、输出门（论文中的LSTM并没有记忆门）的记忆元件所构成的结构称为“大小为S的记忆元件块”。当S = 1时，该结构就是普通的记忆元件。</p>
+<h4 id="误差的反向传播"><a href="#误差的反向传播" class="headerlink" title="误差的反向传播"></a>误差的反向传播</h4><p>首先，规定下标的表示如下：</p>
+<ul>
+<li>k：输出单元</li>
+<li>i：隐藏单元</li>
+<li>C<sub>j</sub>：第j个记忆元件块</li>
+<li>C<sub>j</sub><sup>v</sup>：第j个记忆元件块C<sub>j</sub>中的第v个单元</li>
+<li>l, m, u：任意的网络单元</li>
+<li>t：给定输入序列所有的时间步长</li>
+</ul>
+<p>在t时刻，LSTM的平方误差计算如下:<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8t8il3l76j30ms04y3yp.jpg" width="300"></p>
 <p>其中，t<sup>k</sup>(t)是输出单元k在t时刻的输出目标。<br>在学习率为𝞪的条件下，w<sub>lm</sub>基于梯度的更新如下：<br><img src="http://ww3.sinaimg.cn/large/006y8lVajw1f8t8ijefsxj30dw04ct8r.jpg" width="200"></p>
 <p>将单元l在t时刻的误差（error）定义为：<br><img src="http://ww1.sinaimg.cn/large/006y8lVajw1f8t8ij8d0zj30c80480ss.jpg" width="170"></p>
 <p>使用标准的方向误差传播算法（backdrop）就可以计算出输出单元（output unit，l = k）、隐藏单元（hidden unit，l = i）、输出门单元（output gate unit，l = out<sub>j</sub>）的权重更新：<br><img src="http://ww2.sinaimg.cn/large/006y8lVajw1f8t8iiwi94j30v6032glx.jpg" width="500"></p>
