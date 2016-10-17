@@ -51,7 +51,7 @@ Like most RNNs, an LSTM network is universal in the sense that given enough netw
 <meta property="og:image" content="http://ww4.sinaimg.cn/large/801b780agw1f8u9pxpt6wj20ga04w0sv.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/801b780agw1f8u9qcccctj20lu02gdfy.jpg">
 <meta property="og:image" content="http://ww3.sinaimg.cn/large/801b780agw1f8u9qlkzpoj213k02aq3c.jpg">
-<meta property="og:updated_time" content="2016-10-17T02:23:47.000Z">
+<meta property="og:updated_time" content="2016-10-17T02:25:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LSTM学习笔记">
 <meta name="twitter:description" content="Long Short-Term Memory（LSTM） 是一种循环神经网络（Recurrent Neural Network, RNN）。跟所有RNN一样，在网络单元足够多的条件下，LSTM可以计算传统计算机所能计算的任何东西。
@@ -193,7 +193,7 @@ Like most RNNs, an LSTM network is universal in the sense that given enough netw
 <p>RNN可以采用BPTT（Back-Propagation Through Time）算法进行学习。BPTT和BP算法类似，都是基于梯度的训练方法。首先，将RNN按时间序列展开，如下图：<br><img src="http://ww4.sinaimg.cn/large/006y8lVagw1f8s2cog4sij30tu0zu0v8.jpg" width="600"></p>
 <p>图中表示的是时间步长数为3的RNN的展开。一般的，时间步长为T的RNN展开后将含有T个隐藏层，T可以是任意的。当T为1时，RNN退化为一个普通的前馈神经网络。将RNN展开之后，就可以使用与训练带BP的前馈神经网络类似的方法进行训练。有一点需要注意的是，在展开的RNN中，每一层隐藏层实际上是相同的（只是在不同时刻的副本），也就是说，它们最后得到的参数必须是一致的。在训练过程中，不同时刻的隐藏层的参数可能会不一致，最后可以将它们的平均数作为模型的参数。</p>
 <p>关于RNN的内容，具体的可以参考“<a href="http://axon.cs.byu.edu/~martinez/classes/678/Papers/RNN_Intro.pdf" target="_blank" rel="external">A guide to recurrent neural networks and backpropagation</a>”。</p>
-<h2 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h2><h3 id="梯度消失与避免"><a href="#梯度消失与避免" class="headerlink" title="梯度消失与避免"></a>梯度消失与避免</h3><p>在实际应用中，上述RNN模型存在着梯度消失和梯度爆炸的问题。根据链式法则，输出误差对于输入层的偏导等于各层偏导的乘积（关于前馈神经网络的误差传播参考“<a href="http://www.cnblogs.com/charlotte77/p/5629865.html" target="_blank" rel="external">一文弄懂神经网络中的反向传播法——BackPropagation</a>“）。<br>假设使用的是平均平方误差，则在时刻t，输出层k的误差信号表示为（以下推导来自“<a href="http://deeplearning.cs.cmu.edu/pdfs/Hochreiter97_lstm.pdf" target="_blank" rel="external">Long Short-Term Memory</a>”，本文采用与论文一致的表示方法）：<br><img src="http://ww1.sinaimg.cn/large/006y8lVagw1f8s2couv7gj30cq018jrc.jpg" width="300"></p>
+<h2 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h2><h3 id="梯度消失与避免"><a href="#梯度消失与避免" class="headerlink" title="梯度消失与避免"></a>梯度消失与避免</h3><p>在实际应用中，上述RNN模型存在着梯度消失和梯度爆炸的问题。根据链式法则，输出误差对于输入层的偏导等于各层偏导的乘积（关于前馈神经网络的误差传播参考“<a href="http://www.cnblogs.com/charlotte77/p/5629865.html" target="_blank" rel="external">一文弄懂神经网络中的反向传播法——BackPropagation</a>”）。<br>假设使用的是平均平方误差，则在时刻t，输出层k的误差信号表示为（以下推导来自“<a href="http://deeplearning.cs.cmu.edu/pdfs/Hochreiter97_lstm.pdf" target="_blank" rel="external">Long Short-Term Memory</a>”，本文采用与论文一致的表示方法）：<br><img src="http://ww1.sinaimg.cn/large/006y8lVagw1f8s2couv7gj30cq018jrc.jpg" width="300"></p>
 <p>其中,<br><img src="http://ww4.sinaimg.cn/large/006y8lVagw1f8st5b12muj307i01k3yd.jpg" width="200"><br>是表示非输入单元，f<sub>i</sub>是可微函数，</p>
 <img src="http://ww1.sinaimg.cn/large/006y8lVagw1f8st5lzm59j30ac02gmx2.jpg" width="250">
 <p>表示当前网络单元的输入，w<sub>ij</sub>是单元j和i的之间权重。非输出单元j的反向误差信号为：<br><img src="http://ww3.sinaimg.cn/large/006y8lVajw1f8t0c4cv4lj30v405mq3h.jpg" width="300"></p>
