@@ -12,7 +12,7 @@
 <meta property="og:url" content="https://jiaxuncai.github.io/2016/10/30/依存句法分析评价指标/index.html">
 <meta property="og:site_name" content="Jiaxun's Blog">
 <meta property="og:description" content="依存句法分析器的性能主要可以从3个方面进行评价，分别是依存关系准确率（Dependency Accuracy, DA）、词根准确率（Root Accuracy, RA）以及完整句子依存结构准确率（Sentence Accuracy, SA）。其中，考虑依存关系是否带有标签，又可以将DA分为带标签依存关系准确率（Labeled Attachment Score, LAS）和无标签依存关系准确率（Un">
-<meta property="og:updated_time" content="2016-10-30T08:19:37.000Z">
+<meta property="og:updated_time" content="2016-10-30T08:29:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="依存句法分析评价指标">
 <meta name="twitter:description" content="依存句法分析器的性能主要可以从3个方面进行评价，分别是依存关系准确率（Dependency Accuracy, DA）、词根准确率（Root Accuracy, RA）以及完整句子依存结构准确率（Sentence Accuracy, SA）。其中，考虑依存关系是否带有标签，又可以将DA分为带标签依存关系准确率（Labeled Attachment Score, LAS）和无标签依存关系准确率（Un">
@@ -145,6 +145,7 @@
 <p>CoNLL对LAS和UAS的定义如下：<br><strong>labeled attachment score:</strong> the proportion of “scoring” tokens that are assigned both the correct head and the correct dependency relation label.<br>Punctuation tokens are non-scoring. In very exceptional cases, and depending on the original treebank annotation, some additional types of tokens might also be non-scoring.<br>The overall score of a system is its labeled attachment score on all test sets taken together.</p>
 <p><strong>Unlabeled attachment score</strong> is the proportion of “scoring” tokens that are assigned the correct head (regardless of the dependency relation label).</p>
 </blockquote>
+<p>DA = 正确预测的中心词的数量／预测的中心词数量<br>RA = 正确识别的根词数／根词总数<br>SA = 正确分析的句子数／句子总数<br>LAS = 正确预测中心词和标签的词的数量／总词数<br>UAS = 正确预测中心词的词的数量／总词数</p>
 
       
     </div>
